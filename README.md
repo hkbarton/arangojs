@@ -12,15 +12,15 @@ The official ArangoDB low-level JavaScript client.
 ### With Yarn or NPM
 
 ```sh
-yarn add arangojs
+yarn add arangojs-with-timeout
 ## - or -
-npm install --save arangojs
+npm install --save arangojs-with-timeout
 ```
 
 ### From source
 
 ```sh
-git clone https://github.com/arangodb/arangojs.git
+git clone https://github.com/hkbarton/arangojs
 cd arangojs
 npm install
 npm run dist

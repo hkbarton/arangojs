@@ -1,15 +1,15 @@
 {
-  "name": "arangojs",
+  "name": "arangojs-with-timeout",
   "version": "6.10.0",
   "license": "Apache-2.0",
-  "description": "The official ArangoDB JavaScript driver.",
+  "description": "Folked from the official ArangoDB JavaScript driver with added query timeout support.",
   "homepage": "https://github.com/arangodb/arangojs",
   "bugs": {
     "url": "https://github.com/arangodb/arangojs/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/arangodb/arangojs.git"
+    "url": "https://github.com/hkbarton/arangojs"
   },
   "author": "ArangoDB GmbH",
   "contributors": [

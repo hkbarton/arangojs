@@ -19,6 +19,7 @@ export type ArangojsResponse = IncomingMessage & {
 
 export type ArangojsError = Error & {
   request: ClientRequest;
+  code: string;
 };
 
 export interface RequestOptions {
@@ -102,6 +103,7 @@ export function createRequest(
         options.port = baseUrlParts.port;
       }
       let called = false;
+      let timerForTimeout: any;
       try {
         const req = (isTls ? httpsRequest : httpRequest)(
           options,
@@ -109,6 +111,7 @@ export function createRequest(
             const data: Buffer[] = [];
             res.on("data", chunk => data.push(chunk as Buffer));
             res.on("end", () => {
+              clearTimeout(timerForTimeout);
               const result = res as ArangojsResponse;
               result.request = req;
               result.body = Buffer.concat(data);
@@ -124,7 +127,19 @@ export function createRequest(
         req.on("timeout", () => {
           req.abort();
         });
+
+        if (agentOptions.timeout) {
+          timerForTimeout = setTimeout(() => {
+            timerForTimeout = null;
+            req.abort();
+            const err = new Error("Arango Query Timeout") as ArangojsError;
+            err.code = "ARANGO_QUERY_TIMEOUT";
+            callback(err);
+          }, agentOptions.timeout);
+        }
+
         req.on("error", err => {
+          clearTimeout(timerForTimeout);
           const error = err as ArangojsError;
           error.request = req;
           if (called) return;
