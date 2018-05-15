@@ -67,7 +67,7 @@ export class Database {
       { path: "/_api/cluster/endpoints" },
       res => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
-    this._connection.addToHostList(urls);
+    this._connection.addToHostList(urls.filter(url => !!url));
   }
 
   // Database manipulation

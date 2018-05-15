@@ -65,6 +65,7 @@ export function createRequest(
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
     let called = false;
+    console.log("arango request:", options);
     const req = (isTls ? httpsRequest : httpRequest)(
       options,
       (res: IncomingMessage) => {
