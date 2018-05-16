@@ -64,14 +64,15 @@ export function createRequest(
     options.hostname = baseUrlParts.hostname;
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
-    if (agentOptions.timeout) options.timeout = agentOptions.timeout;
     let called = false;
+    let timerForTimeout = -1;
     const req = (isTls ? httpsRequest : httpRequest)(
       options,
       (res: IncomingMessage) => {
         const data: Buffer[] = [];
         res.on("data", chunk => data.push(chunk as Buffer));
         res.on("end", () => {
+          clearTimeout(timerForTimeout);
           const result = res as ArangojsResponse;
           result.body = Buffer.concat(data);
           if (called) return;
@@ -80,7 +81,16 @@ export function createRequest(
         });
       }
     );
+
+    if (agentOptions.timeout) {
+      timerForTimeout = setTimeout(() => {
+        req.abort();
+        callback(new Error("ARANGO_QUERY_TIMEOUT"));
+      }, agentOptions.timeout);
+    }
+
     req.on("error", err => {
+      clearTimeout(timerForTimeout);
       const error = err as ArangojsError;
       error.request = req;
       if (called) return;
