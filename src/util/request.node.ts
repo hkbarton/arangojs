@@ -64,6 +64,9 @@ export function createRequest(
     options.hostname = baseUrlParts.hostname;
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
+    if (agentOptions.timeout) {
+      options.timeout = agentOptions.timeout;
+    }
     let called = false;
     const queryID = new Date().getTime();
     const req = (isTls ? httpsRequest : httpRequest)(
@@ -72,7 +75,6 @@ export function createRequest(
         const data: Buffer[] = [];
         res.on("data", chunk => data.push(chunk as Buffer));
         res.on("end", () => {
-          console.log(`ARANGO QUERY cost ${new Date().getTime() - queryID}`);
           const result = res as ArangojsResponse;
           result.body = Buffer.concat(data);
           if (called) return;
@@ -82,7 +84,6 @@ export function createRequest(
       }
     );
     req.on("error", err => {
-      console.log("ARANGO QUERY ERR", err);
       const error = err as ArangojsError;
       error.request = req;
       if (called) return;
