@@ -17,6 +17,7 @@ export type ArangojsResponse = IncomingMessage & {
 
 export type ArangojsError = Error & {
   request: ClientRequest;
+  code: string;
 };
 
 export type RequestOptions = {
@@ -84,8 +85,11 @@ export function createRequest(
 
     if (agentOptions.timeout) {
       timerForTimeout = setTimeout(() => {
+        timerForTimeout = -1;
         req.abort();
-        callback(new Error("ARANGO_QUERY_TIMEOUT"));
+        const err = new Error("Arango Query Timeout") as ArangojsError;
+        err.code = "ARANGO_QUERY_TIMEOUT";
+        callback(err);
       }, agentOptions.timeout);
     }
 
