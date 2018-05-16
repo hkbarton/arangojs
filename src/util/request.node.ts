@@ -64,11 +64,8 @@ export function createRequest(
     options.hostname = baseUrlParts.hostname;
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
-    if (agentOptions.timeout) {
-      options.timeout = agentOptions.timeout;
-    }
+    if (agentOptions.timeout) options.timeout = agentOptions.timeout;
     let called = false;
-    const queryID = new Date().getTime();
     const req = (isTls ? httpsRequest : httpRequest)(
       options,
       (res: IncomingMessage) => {
